@@ -1,0 +1,37 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+comments:
+  AbsentOrWrongFileLicense:
+    active: false
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 60
+  TooManyFunctions:
+    active: true
+    ignorePrivate: true
+
+style:
+  MagicNumber:
+    active: true
+    ignoreNumbers: [-1, 0, 1, 2]
+    ignorePropertyDeclaration: true
+  WildcardImport:
+    active: false
+
+naming:
+  FunctionMaxLength:
+    active: true
+    maximumFunctionNameLength: 50
