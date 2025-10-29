@@ -25,7 +25,7 @@ ktlint_function_naming_ignore_when_annotated_with = Composable
 ktlint_standard_no-wildcard-imports = disabled
 ktlint_standard_import-ordering = disabled
 ktlint_standard_argument-list-wrapping = disabled
-ktlint_standard_multiline-expression-wrapping = disabled
+# keep multiline-expression-wrapping enabled to satisfy dependencies
 ktlint_standard_trailing-comma-on-call-site = disabled
 ktlint_standard_trailing-comma-on-declaration-site = disabled
 ktlint_standard_function-naming = disabled
