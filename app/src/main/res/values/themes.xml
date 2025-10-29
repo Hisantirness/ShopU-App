@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.ShopU" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/red_primary</item>
+        <item name="colorPrimaryVariant">@color/red_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/app_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.ShopU" parent="Base.Theme.ShopU" />
+</resources>
