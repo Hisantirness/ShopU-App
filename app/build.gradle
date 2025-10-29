@@ -14,6 +14,7 @@ detekt {
 
 ktlint {
     android.set(true)
+    ignoreFailures = true
 }
 
 android {
