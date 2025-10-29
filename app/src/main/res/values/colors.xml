@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Core palette provided by user -->
+    <color name="black">#060000</color>
+    <color name="white">#F9FAFA</color>
+    <color name="red_primary">#D63734</color>
+
+    <!-- Derived/extra colors -->
+    <color name="red_dark">#B32B29</color>
+    <color name="gray_text">#6E6E6E</color>
+    <color name="input_background">#FFFFFF</color>
+    <color name="input_border">#DADADA</color>
+    <color name="button_pressed">#A92F2D</color>
+
+    <!-- App background alias -->
+    <color name="app_background">@color/white</color>
+</resources>

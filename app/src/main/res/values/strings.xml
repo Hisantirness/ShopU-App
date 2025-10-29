@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ShopU</string>
+    <string name="welcome_message">Bienvenido a ShopU</string>
+    <string name="email_hint">Correo institucional</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="login_button">Iniciar sesion</string>
+    <string name="access_note">Acceso solo con correo institucional</string>
+</resources>
