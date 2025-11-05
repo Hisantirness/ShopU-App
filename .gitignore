@@ -36,3 +36,6 @@ google-services.json
 # VS Code
 .vscode/
 .VSCodeCounter/
+
+# Environment files (secrets)
+.env
