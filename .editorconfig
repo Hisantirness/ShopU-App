@@ -22,10 +22,4 @@ ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
 ktlint_function_naming_ignore_when_annotated_with = Composable
 
 # Desactivar reglas estrictas que no afectan funcionamiento
-ktlint_standard_no-wildcard-imports = disabled
-ktlint_standard_import-ordering = disabled
-ktlint_standard_argument-list-wrapping = disabled
 # keep multiline-expression-wrapping enabled to satisfy dependencies
-ktlint_standard_trailing-comma-on-call-site = disabled
-ktlint_standard_trailing-comma-on-declaration-site = disabled
-ktlint_standard_function-naming = disabled
