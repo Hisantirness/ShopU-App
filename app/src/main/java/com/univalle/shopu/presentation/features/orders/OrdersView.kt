@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.univalle.shopu.R
 import com.univalle.shopu.presentation.util.formatCurrencyCOP
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,8 +33,8 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text("Gestión de pedidos", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+                title = { Text(stringResource(R.string.manage_orders_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back_button)) } },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = cs.surface)
             )
         },
@@ -44,7 +45,7 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
             OutlinedTextField(
                 value = state.search,
                 onValueChange = { vm.onEvent(OrdersEvent.OnSearchChange(it)) },
-                placeholder = { Text("Buscar pedido...") },
+                placeholder = { Text(stringResource(R.string.search_order_placeholder)) },
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = cs.primary,
@@ -58,12 +59,7 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
             // Tabs estados
             TabRow(selectedTabIndex = state.selectedTab, containerColor = cs.surface) {
                 vm.statuses().forEachIndexed { idx, status ->
-                    val title = when (status) {
-                        "pendiente" -> "Pendiente"
-                        "en_proceso" -> "En progreso"
-                        "listo" -> "Listo"
-                        else -> "Entregado"
-                    }
+                    val title = getStatusTitle(status)
                     Tab(
                         selected = state.selectedTab == idx,
                         onClick = { vm.onEvent(OrdersEvent.OnTabChange(idx)) },
@@ -80,19 +76,23 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
                 }
             } else {
                 val currentStatus = vm.currentStatus()
-                val filtered = state.orders.filter { it.status == currentStatus }
+                val filtered = state.orders.filter { order ->
+                    val effectiveStatus = state.localChanges[order.id] ?: order.status
+                    effectiveStatus == currentStatus
+                }
                     .filter { o ->
                         state.search.isBlank() || o.customer.contains(state.search, true) || o.id.contains(state.search, true)
                     }
 
                 LazyColumn(Modifier.weight(1f).padding(16.dp)) {
                     if (filtered.isEmpty()) {
-                        item { Text("No hay pedidos", color = cs.onBackground.copy(alpha = 0.6f)) }
+                        item { Text(stringResource(R.string.no_orders), color = cs.onBackground.copy(alpha = 0.6f)) }
                     } else {
                         items(filtered, key = { it.id }) { order ->
                             OrderRowVM(
                                 order = order,
                                 current = state.localChanges[order.id] ?: order.status,
+                                statuses = vm.statuses(),
                                 onChange = { new -> vm.onEvent(OrdersEvent.OnOrderStatusChange(order.id, new)) }
                             )
                             Spacer(Modifier.height(8.dp))
@@ -112,7 +112,7 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
                     shape = MaterialTheme.shapes.extraLarge,
                     modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp)
                 ) {
-                    if (state.saving) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text("Guardar cambios")
+                    if (state.saving) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text(stringResource(R.string.save_changes))
                 }
             }
         }
@@ -120,7 +120,7 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
 }
 
 @Composable
-private fun OrderRowVM(order: Order, current: String, onChange: (String) -> Unit) {
+private fun OrderRowVM(order: Order, current: String, statuses: List<String>, onChange: (String) -> Unit) {
     val cs = MaterialTheme.colorScheme
     Card(Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp), shape = MaterialTheme.shapes.medium) {
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -132,7 +132,7 @@ private fun OrderRowVM(order: Order, current: String, onChange: (String) -> Unit
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text("#${'$'}{order.id}", fontWeight = FontWeight.Bold, color = cs.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text("#" + order.id, fontWeight = FontWeight.Bold, color = cs.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(order.customer, color = cs.onSurface.copy(alpha = 0.8f))
                 Text(formatTime(order.createdAt), color = cs.onSurface.copy(alpha = 0.7f))
                 Text(formatCurrencyCOP(order.total), color = cs.onSurface)
@@ -140,16 +140,11 @@ private fun OrderRowVM(order: Order, current: String, onChange: (String) -> Unit
             var expanded = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
             Column(horizontalAlignment = Alignment.End) {
                 Button(onClick = { expanded.value = true }, colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary), shape = MaterialTheme.shapes.large) {
-                    Text("Actualizar estado")
+                    Text(stringResource(R.string.update_status))
                 }
                 DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                    listOf("pendiente","en_proceso","listo","entregado").forEach { st ->
-                        val title = when (st) {
-                            "pendiente" -> "Pendiente"
-                            "en_proceso" -> "En progreso"
-                            "listo" -> "Listo"
-                            else -> "Entregado"
-                        }
+                    statuses.forEach { st ->
+                        val title = getStatusTitle(st)
                         DropdownMenuItem(
                             text = { Text(title) },
                             onClick = {
@@ -160,7 +155,7 @@ private fun OrderRowVM(order: Order, current: String, onChange: (String) -> Unit
                     }
                 }
                 if (current != order.status) {
-                    Text("Nuevo: ${'$'}current", color = cs.primary)
+                    Text(stringResource(R.string.new_status_label, current), color = cs.primary)
                 }
             }
         }
@@ -172,4 +167,14 @@ private fun formatTime(ts: Long): String {
     val date = java.util.Date(ts)
     val fmt = java.text.SimpleDateFormat("h:mm a", java.util.Locale("es", "CO"))
     return fmt.format(date)
+}
+
+@Composable
+private fun getStatusTitle(status: String): String {
+    return when (status) {
+        "pendiente" -> stringResource(R.string.status_pending)
+        "en_proceso" -> stringResource(R.string.status_in_progress)
+        "listo" -> stringResource(R.string.status_ready)
+        else -> stringResource(R.string.status_delivered)
+    }
 }

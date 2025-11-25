@@ -1,7 +1,7 @@
 package com.univalle.shopu.presentation.util
 
 import androidx.compose.runtime.mutableStateListOf
-import com.univalle.shopu.presentation.model.CartItem
+import com.univalle.shopu.domain.model.CartItem
 
 object CartStore {
     val items = mutableStateListOf<CartItem>()
