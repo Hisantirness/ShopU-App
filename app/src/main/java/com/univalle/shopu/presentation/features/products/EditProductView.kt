@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.univalle.shopu.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +46,7 @@ fun EditProductView(
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text("Editar producto", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.edit_product_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = null) } },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = cs.surface)
             )
@@ -68,7 +69,7 @@ fun EditProductView(
                     else -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Image(painter = painterResource(id = R.drawable.shopulogofinal), contentDescription = null, modifier = Modifier.size(64.dp))
                         Spacer(Modifier.height(8.dp))
-                        Text("Sin imagen", color = Color.Gray)
+                        Text(stringResource(R.string.no_image), color = Color.Gray)
                     }
                 }
             }
@@ -76,17 +77,17 @@ fun EditProductView(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(horizontal = 16.dp)) {
                 Button(onClick = {
                     pickImageLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }) { Text("Elegir de galería") }
-                OutlinedButton(onClick = { vm.updateImage(null) }) { Text("Mantener actual") }
+                }) { Text(stringResource(R.string.pick_from_gallery)) }
+                OutlinedButton(onClick = { vm.updateImage(null) }) { Text(stringResource(R.string.keep_current_image)) }
             }
 
             // Campos
             Spacer(Modifier.height(16.dp))
-            OutlinedTextField(value = state.name, onValueChange = vm::updateName, label = { Text("Nombre") }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            OutlinedTextField(value = state.name, onValueChange = vm::updateName, label = { Text(stringResource(R.string.name_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(value = state.price, onValueChange = vm::updatePrice, label = { Text("Precio") }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            OutlinedTextField(value = state.price, onValueChange = vm::updatePrice, label = { Text(stringResource(R.string.price_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(value = state.quantity, onValueChange = vm::updateQuantity, label = { Text("Cantidad disponible") }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            OutlinedTextField(value = state.quantity, onValueChange = vm::updateQuantity, label = { Text(stringResource(R.string.quantity_available_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
             Spacer(Modifier.height(8.dp))
             val categories = listOf("Café","Snack","Bebidas frías","Postres")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -109,6 +110,7 @@ fun EditProductView(
             state.error?.let {
                 Spacer(Modifier.height(8.dp))
                 Text(it, color = Color.Red, modifier = Modifier.padding(horizontal = 16.dp))
+                Text("Debug ID: ${state.productId}", color = Color.Gray, modifier = Modifier.padding(horizontal = 16.dp))
             }
 
             Spacer(Modifier.height(16.dp))
@@ -118,12 +120,12 @@ fun EditProductView(
                 colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(52.dp)
             ) {
-                if (state.saving) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text("Guardar cambios")
+                if (state.saving) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text(stringResource(R.string.save_changes))
             }
 
             if (state.success) {
                 Spacer(Modifier.height(8.dp))
-                Text("Cambios guardados", color = cs.onBackground.copy(alpha = 0.8f), modifier = Modifier.padding(horizontal = 16.dp))
+                Text(stringResource(R.string.changes_saved), color = cs.onBackground.copy(alpha = 0.8f), modifier = Modifier.padding(horizontal = 16.dp))
                 LaunchedEffect("done") { onDone() }
             }
         }

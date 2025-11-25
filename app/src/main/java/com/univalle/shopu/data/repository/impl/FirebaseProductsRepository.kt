@@ -6,12 +6,12 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.univalle.shopu.domain.repository.ProductsRepository
-import com.univalle.shopu.presentation.model.Product
+import com.univalle.shopu.domain.model.Product
 import kotlinx.coroutines.tasks.await
 
 class FirebaseProductsRepository : ProductsRepository {
     private val db = Firebase.firestore
-    private val storage = FirebaseStorage.getInstance()
+    private val storage = FirebaseStorage.getInstance("gs://shopu-prueba.appspot.com")
 
     override fun observeProducts(onChange: (List<Product>) -> Unit): ListenerRegistration {
         return db.collection("products").addSnapshotListener { snap, _ ->
@@ -25,13 +25,15 @@ class FirebaseProductsRepository : ProductsRepository {
     }
 
     override suspend fun createProduct(name: String, price: Double, quantity: Int, category: String, imageUrl: String?) {
-        val product = hashMapOf(
+        val product = hashMapOf<String, Any?>(
             "name" to name.trim(),
-            "price" to price,
-            "quantity" to quantity,
-            "imageUrl" to imageUrl,
+            "price" to price.toDouble(),
+            "quantity" to quantity.toInt(),
+            "imageUrl" to (imageUrl ?: ""),
             "category" to category
         )
+        
+        if (imageUrl == null) product["imageUrl"] = null else product["imageUrl"] = imageUrl
         db.collection("products").add(product).await()
     }
 

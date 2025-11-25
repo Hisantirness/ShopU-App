@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.shopu.data.repository.impl.FirebaseProductsRepository
 import com.univalle.shopu.domain.repository.ProductsRepository
-import com.univalle.shopu.presentation.model.Product
+import com.univalle.shopu.domain.model.Product
 import kotlinx.coroutines.launch
 
 class EditProductViewModel(

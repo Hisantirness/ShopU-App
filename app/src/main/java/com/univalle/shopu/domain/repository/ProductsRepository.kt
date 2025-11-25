@@ -2,7 +2,7 @@ package com.univalle.shopu.domain.repository
 
 import android.net.Uri
 import com.google.firebase.firestore.ListenerRegistration
-import com.univalle.shopu.presentation.model.Product
+import com.univalle.shopu.domain.model.Product
 
 interface ProductsRepository {
     fun observeProducts(onChange: (List<Product>) -> Unit): ListenerRegistration
