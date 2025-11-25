@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import com.univalle.shopu.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +27,7 @@ fun WorkersView(onBack: () -> Unit, vm: WorkersViewModel = viewModel()) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text("Gestión de trabajadores", style = MaterialTheme.typography.titleLarge) },
+                title = { Text(stringResource(R.string.manage_workers_title), style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = null) } },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = cs.surface)
             )
@@ -38,7 +40,7 @@ fun WorkersView(onBack: () -> Unit, vm: WorkersViewModel = viewModel()) {
                 OutlinedTextField(
                     value = state.search,
                     onValueChange = { vm.onEvent(WorkersEvent.OnSearchChange(it)) },
-                    placeholder = { Text("Buscar trabajador...") },
+                    placeholder = { Text(stringResource(R.string.search_worker_placeholder)) },
                     modifier = Modifier.weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = cs.primary,
@@ -53,7 +55,7 @@ fun WorkersView(onBack: () -> Unit, vm: WorkersViewModel = viewModel()) {
                 OutlinedTextField(
                     value = state.emailInput,
                     onValueChange = { vm.onEvent(WorkersEvent.OnEmailInputChange(it)) },
-                    placeholder = { Text("Correo institucional...") },
+                    placeholder = { Text(stringResource(R.string.institutional_email_placeholder)) },
                     modifier = Modifier.weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = cs.primary,
@@ -64,7 +66,7 @@ fun WorkersView(onBack: () -> Unit, vm: WorkersViewModel = viewModel()) {
                 )
                 Spacer(Modifier.width(8.dp))
                 Button(onClick = { vm.onEvent(WorkersEvent.OnAddPending(state.emailInput)) }, colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)) {
-                    Text("Añadir")
+                    Text(stringResource(R.string.add_action))
                 }
             }
 
@@ -105,7 +107,7 @@ fun WorkersView(onBack: () -> Unit, vm: WorkersViewModel = viewModel()) {
                     enabled = !state.saving,
                     colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary),
                     modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp)
-                ) { if (state.saving) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text("Guardar cambios") }
+                ) { if (state.saving) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text(stringResource(R.string.save_changes)) }
             }
         }
     }
@@ -124,10 +126,10 @@ private fun WorkerRowVM(
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(email, color = cs.onSurface, modifier = Modifier.weight(1f))
             if (pendingAdd) {
-                OutlinedButton(onClick = { onRemovePending?.invoke() }) { Text("Quitar") }
+                OutlinedButton(onClick = { onRemovePending?.invoke() }) { Text(stringResource(R.string.remove_action)) }
             } else {
                 val tint = if (markedForRemoval) cs.primary else cs.onSurface
-                IconButton(onClick = { onToggleRemove?.invoke() }) { Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = tint) }
+                IconButton(onClick = { onToggleRemove?.invoke() }) { Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = tint) }
             }
         }
     }
