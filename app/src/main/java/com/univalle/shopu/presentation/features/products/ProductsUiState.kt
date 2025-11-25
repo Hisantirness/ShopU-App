@@ -1,6 +1,6 @@
 package com.univalle.shopu.presentation.features.products
 
-import com.univalle.shopu.presentation.model.Product
+import com.univalle.shopu.domain.model.Product
 
 data class ProductsUiState(
     val search: String = "",

@@ -22,8 +22,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.univalle.shopu.R
-import com.univalle.shopu.presentation.model.Product
+import com.univalle.shopu.domain.model.Product
 import com.univalle.shopu.presentation.util.formatCurrencyCOP
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +40,7 @@ fun ProductsView(
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text("Gestión de productos", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.manage_products_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = null) } },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = cs.surface)
             )
@@ -51,7 +52,7 @@ fun ProductsView(
             OutlinedTextField(
                 value = state.search,
                 onValueChange = { vm.onEvent(ProductsEvent.OnSearchChange(it)) },
-                placeholder = { Text("Buscar producto...") },
+                placeholder = { Text(stringResource(R.string.search_product_placeholder)) },
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = cs.primary,
@@ -69,7 +70,7 @@ fun ProductsView(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Crear nuevo producto")
+                Text(stringResource(R.string.create_new_product))
             }
 
             Spacer(Modifier.height(8.dp))
@@ -103,7 +104,7 @@ fun ProductsView(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary),
                     modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp)
-                ) { Text("Guardar cambios") }
+                ) { Text(stringResource(R.string.save_changes)) }
             }
         }
     }
@@ -113,15 +114,15 @@ fun ProductsView(
         val bulk = state.confirmId == "__bulk__"
         AlertDialog(
             onDismissRequest = { vm.onEvent(ProductsEvent.OnConfirmId(null)) },
-            title = { Text(if (bulk) "Confirmar cambios" else "Eliminar producto") },
-            text = { Text(if (bulk) "Se eliminarán ${'$'}{state.toDelete.size} producto(s). ¿Deseas continuar?" else "¿Deseas eliminar este producto?") },
+            title = { Text(if (bulk) stringResource(R.string.confirm_changes_title) else stringResource(R.string.delete_product_title)) },
+            text = { Text(if (bulk) stringResource(R.string.bulk_delete_message, state.toDelete.size) else stringResource(R.string.delete_product_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     if (bulk) vm.onEvent(ProductsEvent.SaveChanges)
                     vm.onEvent(ProductsEvent.OnConfirmId(null))
-                }) { Text("Confirmar") }
+                }) { Text(stringResource(R.string.confirm)) }
             },
-            dismissButton = { TextButton(onClick = { vm.onEvent(ProductsEvent.OnConfirmId(null)) }) { Text("Cancelar") } }
+            dismissButton = { TextButton(onClick = { vm.onEvent(ProductsEvent.OnConfirmId(null)) }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 }
@@ -148,13 +149,13 @@ private fun ProductRowVM(
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(p.name, fontWeight = FontWeight.Bold, color = cs.onSurface)
-                Text("Precio", color = cs.onSurface.copy(alpha = 0.7f))
+                Text(stringResource(R.string.price_label), color = cs.onSurface.copy(alpha = 0.7f))
                 Text(formatCurrencyCOP(p.price), color = cs.onSurface)
-                Text("Cantidad: ${'$'}{p.quantity}", color = cs.onSurface)
+                Text(stringResource(R.string.quantity_label, p.quantity), color = cs.onSurface)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = "Editar", tint = cs.primary) }
-                IconButton(onClick = onToggleDelete) { Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = if (selectedForDelete) cs.primary else cs.onSurface) }
+                IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit), tint = cs.primary) }
+                IconButton(onClick = onToggleDelete) { Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = if (selectedForDelete) cs.primary else cs.onSurface) }
             }
         }
     }
