@@ -5,18 +5,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
-import com.univalle.shopu.presentation.screens.LoginScreen
-import com.univalle.shopu.presentation.screens.RegisterScreen
-import com.univalle.shopu.presentation.screens.WelcomeScreen
-import com.univalle.shopu.presentation.screens.ProductsMenuScreen
-import com.univalle.shopu.presentation.screens.CartScreen
-import com.univalle.shopu.presentation.screens.AdminHomeScreen
-import com.univalle.shopu.presentation.screens.ManageAdminsScreen
+import com.univalle.shopu.presentation.features.auth.LoginScreen
+import com.univalle.shopu.presentation.features.auth.RegisterScreen
+
+import com.univalle.shopu.presentation.features.shop.ProductsMenuScreen
+import com.univalle.shopu.presentation.features.shop.CartScreen
+import com.univalle.shopu.presentation.features.admin.AdminHomeScreen
+import com.univalle.shopu.presentation.features.admin.ManageAdminsScreen
 
 object Routes {
     const val LOGIN = "login"
     const val REGISTER = "register"
-    const val WELCOME = "welcome"
+
     const val MENU = "menu"
     const val CART = "cart"
     const val ADMIN_HOME = "admin_home"
@@ -46,8 +46,8 @@ fun NavigationWrapper(
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
-                onAdminLogin = {
-                    navController.navigate(Routes.ADMIN_HOME) {
+                onAdminLogin = { isSuper ->
+                    navController.navigate("admin_home/$isSuper") {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 }
@@ -65,9 +65,7 @@ fun NavigationWrapper(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(Routes.WELCOME) {
-            WelcomeScreen()
-        }
+
 
         composable(Routes.MENU) {
             ProductsMenuScreen(
@@ -79,8 +77,13 @@ fun NavigationWrapper(
             CartScreen(onBack = { navController.popBackStack() })
         }
 
-        composable(Routes.ADMIN_HOME) {
+        composable(
+            route = "admin_home/{isSuper}",
+            arguments = listOf(androidx.navigation.navArgument("isSuper") { type = androidx.navigation.NavType.BoolType })
+        ) { backStackEntry ->
+            val isSuper = backStackEntry.arguments?.getBoolean("isSuper") ?: false
             AdminHomeScreen(
+                isSuperAdmin = isSuper,
                 onGoOrders = { navController.navigate(Routes.ADMIN_ORDERS) },
                 onGoManageProducts = { navController.navigate(Routes.ADMIN_MANAGE_PRODUCTS) },
                 onGoManageWorkers = { navController.navigate(Routes.ADMIN_MANAGE_WORKERS) },
@@ -95,22 +98,21 @@ fun NavigationWrapper(
         composable(Routes.ADMIN_CREATE_PRODUCT) {
             com.univalle.shopu.presentation.features.products.CreateProductView(
                 onDone = {
-                    navController.navigate(Routes.ADMIN_HOME) {
-                        popUpTo(Routes.ADMIN_HOME) { inclusive = true }
-                    }
+                    navController.popBackStack()
                 },
                 onBack = { navController.popBackStack() }
             )
         }
 
-        composable(Routes.ADMIN_EDIT_PRODUCT) { backStackEntry ->
-            val pid = backStackEntry.arguments?.getString("productId") ?: ""
+        composable(
+            route = "admin_edit_product/{productId}",
+            arguments = listOf(androidx.navigation.navArgument("productId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val pid = (backStackEntry.arguments?.getString("productId") ?: "").trim()
             com.univalle.shopu.presentation.features.products.EditProductView(
                 productId = pid,
                 onDone = {
-                    navController.navigate(Routes.ADMIN_MANAGE_PRODUCTS) {
-                        popUpTo(Routes.ADMIN_MANAGE_PRODUCTS) { inclusive = true }
-                    }
+                    navController.popBackStack()
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -124,7 +126,7 @@ fun NavigationWrapper(
             com.univalle.shopu.presentation.features.products.ProductsView(
                 onBack = { navController.popBackStack() },
                 onCreateNew = { navController.navigate(Routes.ADMIN_CREATE_PRODUCT) },
-                onEditProduct = { pid -> navController.navigate("admin_edit_product/${'$'}pid") }
+                onEditProduct = { pid -> navController.navigate("admin_edit_product/$pid") }
             )
         }
 
