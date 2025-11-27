@@ -65,7 +65,7 @@ class EditProductViewModel(
     fun save() {
         val s = _state.value
         var error: String? = null
-        val priceVal = s.price.replace("$", "").replace(".", "").replace(",", ".").toDoubleOrNull() ?: run { error = "Precio inválido"; null }
+        val priceVal = s.price.replace(Regex("[^0-9.,]"), "").replace(",", ".").toDoubleOrNull() ?: run { error = "Precio inválido"; null }
         val qtyVal = s.quantity.toIntOrNull() ?: run { error = "Cantidad inválida"; null }
         if (s.name.isBlank() && error == null) error = "Nombre requerido"
         if (error != null) { _state.value = s.copy(error = error); return }

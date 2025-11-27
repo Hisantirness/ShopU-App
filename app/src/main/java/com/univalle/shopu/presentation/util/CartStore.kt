@@ -9,11 +9,9 @@ object CartStore {
     fun add(item: CartItem) {
         val existing = items.find { it.id == item.id }
         if (existing != null) {
-            existing.quantity += 1
-            // Trigger recomposition by resetting list item
             val idx = items.indexOf(existing)
             if (idx >= 0) {
-                items[idx] = existing.copy()
+                items[idx] = existing.copy(quantity = existing.quantity + 1)
             }
         } else {
             items.add(item)
@@ -22,17 +20,15 @@ object CartStore {
 
     fun inc(id: String) {
         val existing = items.find { it.id == id } ?: return
-        existing.quantity += 1
         val idx = items.indexOf(existing)
-        if (idx >= 0) items[idx] = existing.copy()
+        if (idx >= 0) items[idx] = existing.copy(quantity = existing.quantity + 1)
     }
 
     fun dec(id: String) {
         val existing = items.find { it.id == id } ?: return
         if (existing.quantity > 1) {
-            existing.quantity -= 1
             val idx = items.indexOf(existing)
-            if (idx >= 0) items[idx] = existing.copy()
+            if (idx >= 0) items[idx] = existing.copy(quantity = existing.quantity - 1)
         } else {
             items.remove(existing)
         }

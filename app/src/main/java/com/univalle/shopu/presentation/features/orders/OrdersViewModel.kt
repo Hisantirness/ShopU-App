@@ -4,12 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.shopu.domain.repository.OrdersRepository
 import com.univalle.shopu.data.repository.impl.FirebaseOrdersRepository
+import com.univalle.shopu.domain.model.OrderStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private val STATUSES = listOf("pendiente", "en_proceso", "listo", "entregado")
 
 class OrdersViewModel(
     private val repository: OrdersRepository = FirebaseOrdersRepository()
@@ -58,18 +57,19 @@ class OrdersViewModel(
             var failures = 0
             toUpdate.forEach { ord ->
                 val newStatus = current.localChanges[ord.id]!!
-                repository.updateOrderStatus(ord.id, newStatus) { failures += 1 }
+                val result = repository.updateOrderStatus(ord.id, newStatus)
+                if (result.isFailure) failures += 1
             }
             _state.update {
                 it.copy(
                     saving = false,
                     message = if (failures == 0) "Cambios guardados" else "Algunos cambios fallaron",
-                    localChanges = emptyMap()
+                    localChanges = if (failures == 0) emptyMap() else it.localChanges // Keep changes if failed
                 )
             }
         }
     }
 
-    fun currentStatus(): String = STATUSES.getOrElse(_state.value.selectedTab) { "pendiente" }
-    fun statuses(): List<String> = STATUSES
+    fun currentStatus(): String = OrderStatus.ALL_STATUSES.getOrElse(_state.value.selectedTab) { OrderStatus.PENDING }
+    fun statuses(): List<String> = OrderStatus.ALL_STATUSES
 }

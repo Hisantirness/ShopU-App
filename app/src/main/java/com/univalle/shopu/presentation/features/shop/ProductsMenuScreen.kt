@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -27,9 +29,15 @@ import com.univalle.shopu.domain.model.Product
 import com.univalle.shopu.presentation.util.CartStore
 import com.univalle.shopu.presentation.util.formatCurrencyCOP
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 
 @Composable
-fun ProductsMenuScreen(onCartClick: () -> Unit) {
+fun ProductsMenuScreen(
+    onCartClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onHistoryClick: () -> Unit
+) {
     val cs = MaterialTheme.colorScheme
 
     var search by remember { mutableStateOf("") }
@@ -47,11 +55,16 @@ fun ProductsMenuScreen(onCartClick: () -> Unit) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(cs.background)
-    ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(cs.background)
+        ) {
         // Top bar
         Row(
             modifier = Modifier
@@ -69,6 +82,24 @@ fun ProductsMenuScreen(onCartClick: () -> Unit) {
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.menu_title), color = cs.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
+            IconButton(onClick = onHistoryClick) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.List,
+                    contentDescription = stringResource(R.string.order_history),
+                    tint = cs.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            IconButton(onClick = onProfileClick) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.Person,
+                    contentDescription = stringResource(R.string.user_profile),
+                    tint = cs.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            Spacer(Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Default.ShoppingCart,
                 contentDescription = stringResource(R.string.cart_desc),
@@ -125,23 +156,34 @@ fun ProductsMenuScreen(onCartClick: () -> Unit) {
             }
             LazyColumn(Modifier.fillMaxSize()) {
                 items(filtered) { p ->
-                    ProductCard(p, onAdd = {
-                        CartStore.add(
-                            com.univalle.shopu.domain.model.CartItem(
-                                id = p.id, name = p.name, price = p.price, imageUrl = p.imageUrl
-                            )
-                        )
-                    })
+                    ProductCard(
+                        product = p,
+                        snackbarHostState = snackbarHostState,
+                        context = context
+                    )
                 }
                 item { Spacer(Modifier.height(24.dp)) }
             }
+            }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 }
 
 @Composable
-private fun ProductCard(p: Product, onAdd: () -> Unit) {
+fun ProductCard(
+    product: Product,
+    snackbarHostState: SnackbarHostState,
+    context: android.content.Context
+) {
     val cs = MaterialTheme.colorScheme
+    val scope = rememberCoroutineScope()
 
     Card(
         modifier = Modifier
@@ -150,10 +192,10 @@ private fun ProductCard(p: Product, onAdd: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            val model = if (!p.imageUrl.isNullOrBlank() && (p.imageUrl.startsWith("http://") || p.imageUrl.startsWith("https://"))) p.imageUrl else null
+            val model = if (!product.imageUrl.isNullOrBlank() && (product.imageUrl.startsWith("http://") || product.imageUrl.startsWith("https://"))) product.imageUrl else null
             AsyncImage(
                 model = model,
-                contentDescription = p.name,
+                contentDescription = product.name,
                 modifier = Modifier.size(80.dp),
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.shopulogofinal),
@@ -161,14 +203,32 @@ private fun ProductCard(p: Product, onAdd: () -> Unit) {
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(p.name, color = cs.onSurface, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(product.name, color = cs.onSurface, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(Modifier.height(4.dp))
                 Text(stringResource(R.string.price_label), color = cs.onSurface.copy(alpha = 0.6f))
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(formatCurrencyCOP(p.price), color = cs.onSurface, fontWeight = FontWeight.Bold)
+                Text(formatCurrencyCOP(product.price), color = cs.onSurface, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
-                Button(onClick = onAdd, colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)) {
+                Button(
+                    onClick = {
+                        CartStore.add(
+                            com.univalle.shopu.domain.model.CartItem(
+                                id = product.id,
+                                name = product.name,
+                                price = product.price,
+                                imageUrl = product.imageUrl
+                            )
+                        )
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.item_added_to_cart),
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)
+                ) {
                     Text(stringResource(R.string.add_button))
                 }
             }

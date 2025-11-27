@@ -5,5 +5,5 @@ import com.google.firebase.firestore.ListenerRegistration
 
 interface OrdersRepository {
     fun observeOrders(onChange: (List<Order>) -> Unit): ListenerRegistration
-    fun updateOrderStatus(orderId: String, newStatus: String, onFailure: () -> Unit)
+    suspend fun updateOrderStatus(orderId: String, newStatus: String): Result<Unit>
 }
