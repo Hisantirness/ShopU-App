@@ -1,6 +1,7 @@
 package com.univalle.shopu.presentation.features.orders
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,9 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
+fun OrdersView(onBack: () -> Unit, onOrderClick: (String) -> Unit, vm: OrdersViewModel = viewModel()) {
     val cs = MaterialTheme.colorScheme
     val state by vm.state.collectAsStateWithLifecycle()
 
@@ -93,7 +96,8 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
                                 order = order,
                                 current = state.localChanges[order.id] ?: order.status,
                                 statuses = vm.statuses(),
-                                onChange = { new -> vm.onEvent(OrdersEvent.OnOrderStatusChange(order.id, new)) }
+                                onChange = { new -> vm.onEvent(OrdersEvent.OnOrderStatusChange(order.id, new)) },
+                                onClick = { onOrderClick(order.id) }
                             )
                             Spacer(Modifier.height(8.dp))
                         }
@@ -120,42 +124,106 @@ fun OrdersView(onBack: () -> Unit, vm: OrdersViewModel = viewModel()) {
 }
 
 @Composable
-private fun OrderRowVM(order: Order, current: String, statuses: List<String>, onChange: (String) -> Unit) {
+private fun OrderRowVM(order: Order, current: String, statuses: List<String>, onChange: (String) -> Unit, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
-    Card(Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp), shape = MaterialTheme.shapes.medium) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.shopulogofinal),
-                contentDescription = null,
-                modifier = Modifier.size(56.dp).clip(MaterialTheme.shapes.medium),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text("#" + order.id, fontWeight = FontWeight.Bold, color = cs.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(order.customer, color = cs.onSurface.copy(alpha = 0.8f))
-                Text(formatTime(order.createdAt), color = cs.onSurface.copy(alpha = 0.7f))
-                Text(formatCurrencyCOP(order.total), color = cs.onSurface)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        onClick = onClick
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            // Header with ID and Price
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+                // Image
+                Image(
+                    painter = painterResource(id = R.drawable.shopulogofinal), // Placeholder for product image
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .border(1.dp, Color.LightGray, MaterialTheme.shapes.small),
+                    contentScale = ContentScale.Crop
+                )
+                
+                Spacer(Modifier.width(12.dp))
+                
+                // Details
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = "#" + order.id,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    // Show first item name or "Pedido"
+                    val firstItemName = (order.items.firstOrNull()?.get("name") as? String) ?: "Pedido"
+                    Text(
+                        text = firstItemName,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = formatTime(order.createdAt),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                }
+                
+                // Price
+                Text(
+                    text = formatCurrencyCOP(order.total),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
-            var expanded = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-            Column(horizontalAlignment = Alignment.End) {
-                Button(onClick = { expanded.value = true }, colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary), shape = MaterialTheme.shapes.large) {
-                    Text(stringResource(R.string.update_status))
-                }
-                DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-                    statuses.forEach { st ->
-                        val title = getStatusTitle(st)
-                        DropdownMenuItem(
-                            text = { Text(title) },
-                            onClick = {
-                                onChange(st)
-                                expanded.value = false
-                            }
-                        )
+            
+            Spacer(Modifier.height(12.dp))
+            
+            // Button and Status
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                var expanded by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+                
+                Box {
+                    Button(
+                        onClick = { expanded = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFD32F2F), // Red color
+                            contentColor = Color.White
+                        ),
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text("Actualizar estado", style = MaterialTheme.typography.labelLarge)
                     }
-                }
-                if (current != order.status) {
-                    Text(stringResource(R.string.new_status_label, current), color = cs.primary)
+                    
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        statuses.forEach { st ->
+                            val title = getStatusTitle(st)
+                            DropdownMenuItem(
+                                text = { Text(title) },
+                                onClick = {
+                                    onChange(st)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -175,6 +243,8 @@ private fun getStatusTitle(status: String): String {
         "pendiente" -> stringResource(R.string.status_pending)
         "en_proceso" -> stringResource(R.string.status_in_progress)
         "listo" -> stringResource(R.string.status_ready)
-        else -> stringResource(R.string.status_delivered)
+        "entregado" -> stringResource(R.string.status_delivered)
+        "cancelado" -> "Cancelado"
+        else -> status
     }
 }
