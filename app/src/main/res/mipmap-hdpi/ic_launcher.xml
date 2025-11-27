@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/red_primary"/>
+    <item>
+        <inset
+            android:inset="12dp"
+            android:drawable="@drawable/shopulogofinal" />
+    </item>
+    
+    <!-- Nota: El adaptative icon válido ya está en mipmap-anydpi-v26/. -->
+</layer-list>

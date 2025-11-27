@@ -32,3 +32,10 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# VS Code
+.vscode/
+.VSCodeCounter/
+
+# Environment files (secrets)
+.env
