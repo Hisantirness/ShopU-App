@@ -3,6 +3,7 @@ package com.univalle.shopu.presentation.features.auth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,8 @@ fun LoginScreen(
     var loading by remember { mutableStateOf(false) }
     var showVerifyDialog by remember { mutableStateOf(false) }
     var verifyDialogMessage by remember { mutableStateOf("") }
+    var showRecoverySuccessDialog by remember { mutableStateOf(false) }
+    var recoverySuccessMessage by remember { mutableStateOf("") }
     val cs = MaterialTheme.colorScheme
     val context = LocalContext.current
     val db = Firebase.firestore
@@ -159,7 +162,39 @@ fun LoginScreen(
                 Text(stringResource(R.string.create_account))
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Text(text = stringResource(R.string.access_note), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
+            TextButton(onClick = {
+                if (email.isBlank()) {
+                    error = context.getString(R.string.recover_password_enter_email)
+                    return@TextButton
+                }
+                loading = true
+                auth.sendPasswordResetEmail(email.trim())
+                    .addOnCompleteListener { task ->
+                        loading = false
+                        if (task.isSuccessful) {
+                            recoverySuccessMessage = context.getString(R.string.recover_password_success, email)
+                            showRecoverySuccessDialog = true
+                            error = null
+                        } else {
+                            error = task.exception?.localizedMessage ?: context.getString(R.string.recover_password_error)
+                        }
+                    }
+            }) {
+                Text(stringResource(R.string.recover_password))
+            }
+
+            if (showRecoverySuccessDialog) {
+                AlertDialog(
+                    onDismissRequest = { showRecoverySuccessDialog = false },
+                    title = { Text(stringResource(R.string.app_name)) },
+                    text = { Text(recoverySuccessMessage) },
+                    confirmButton = {
+                        Button(onClick = { showRecoverySuccessDialog = false }) {
+                            Text(stringResource(R.string.understood))
+                        }
+                    }
+                )
+            }
 
             if (showVerifyDialog) {
                 AlertDialog(

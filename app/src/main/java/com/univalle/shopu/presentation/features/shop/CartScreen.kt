@@ -19,7 +19,10 @@ import com.univalle.shopu.R
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun CartScreen(onBack: () -> Unit) {
+fun CartScreen(
+    onBack: () -> Unit,
+    onProceedToPayment: () -> Unit
+) {
     val cs = MaterialTheme.colorScheme
     val context = LocalContext.current
     var placing by remember { mutableStateOf(false) }
@@ -29,7 +32,7 @@ fun CartScreen(onBack: () -> Unit) {
         Text(stringResource(R.string.cart_title), style = MaterialTheme.typography.titleLarge, color = cs.onBackground)
         Spacer(Modifier.height(12.dp))
         LazyColumn(Modifier.weight(1f)) {
-            items(CartStore.items) { item ->
+            items(items = CartStore.items, key = { it.id }) { item ->
                 Card(Modifier.fillMaxWidth().padding(vertical = 6.dp), elevation = CardDefaults.cardElevation(2.dp)) {
                     Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
@@ -58,47 +61,15 @@ fun CartScreen(onBack: () -> Unit) {
             Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = cs.surface, contentColor = cs.onSurface)) { Text(stringResource(R.string.back_button)) }
             Button(
                 onClick = {
-                    if (CartStore.items.isEmpty()) { message = context.getString(R.string.cart_empty); return@Button }
-                    placing = true
-                    val auth = Firebase.auth
-                    val db = Firebase.firestore
-                    val email = auth.currentUser?.email ?: "anon@local"
-                    
-                    db.runTransaction { transaction ->
-                        val counterRef = db.collection("counters").document("orders")
-                        val snapshot = transaction.get(counterRef)
-                        val newId = if (snapshot.exists()) {
-                            (snapshot.getLong("lastId") ?: 1000) + 1
-                        } else {
-                            1001
-                        }
-                        transaction.set(counterRef, mapOf("lastId" to newId))
-                        
-                        val order = hashMapOf(
-                            "id" to newId.toString(),
-                            "customer" to email,
-                            "items" to CartStore.items.map { mapOf("id" to it.id, "name" to it.name, "price" to it.price, "quantity" to it.quantity) },
-                            "total" to CartStore.total(),
-                            "status" to "pendiente",
-                            "createdAt" to System.currentTimeMillis()
-                        )
-                        val orderRef = db.collection("orders").document(newId.toString())
-                        transaction.set(orderRef, order)
+                    if (CartStore.items.isEmpty()) {
+                        message = context.getString(R.string.cart_empty)
+                        return@Button
                     }
-                    .addOnSuccessListener {
-                        placing = false
-                        CartStore.clear()
-                        message = context.getString(R.string.order_success)
-                    }
-                    .addOnFailureListener { e ->
-                        placing = false
-                        message = e.localizedMessage ?: context.getString(R.string.order_error)
-                    }
+                    onProceedToPayment()
                 },
-                enabled = !placing,
                 colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)
             ) {
-                if (placing) CircularProgressIndicator(color = cs.onPrimary, strokeWidth = 2.dp) else Text(stringResource(R.string.confirm_order))
+                Text(stringResource(R.string.confirm_order))
             }
         }
     }
