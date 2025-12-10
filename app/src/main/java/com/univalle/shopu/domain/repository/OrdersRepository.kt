@@ -1,6 +1,6 @@
 package com.univalle.shopu.domain.repository
 
-import com.univalle.shopu.presentation.features.orders.Order
+import com.univalle.shopu.domain.model.Order
 import com.google.firebase.firestore.ListenerRegistration
 
 interface OrdersRepository {

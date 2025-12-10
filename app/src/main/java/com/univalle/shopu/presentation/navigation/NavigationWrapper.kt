@@ -5,16 +5,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
-import com.univalle.shopu.presentation.features.auth.LoginScreen
-import com.univalle.shopu.presentation.features.auth.RegisterScreen
+import com.univalle.shopu.presentation.ui.auth.LoginScreen
+import com.univalle.shopu.presentation.ui.auth.RegisterScreen
 
-import com.univalle.shopu.presentation.features.shop.ProductsMenuScreen
-import com.univalle.shopu.presentation.features.shop.CartScreen
-import com.univalle.shopu.presentation.features.shop.UserProfileScreen
-import com.univalle.shopu.presentation.features.shop.OrderHistoryScreen
-import com.univalle.shopu.presentation.features.shop.PaymentScreen
-import com.univalle.shopu.presentation.features.admin.AdminHomeScreen
-import com.univalle.shopu.presentation.features.admin.ManageAdminsScreen
+import com.univalle.shopu.presentation.ui.shop.ProductsMenuScreen
+import com.univalle.shopu.presentation.ui.shop.CartScreen
+import com.univalle.shopu.presentation.ui.shop.UserProfileScreen
+import com.univalle.shopu.presentation.ui.shop.OrderHistoryScreen
+import com.univalle.shopu.presentation.ui.shop.PaymentScreen
+import com.univalle.shopu.presentation.ui.admin.AdminHomeScreen
+import com.univalle.shopu.presentation.ui.admin.ManageAdminsScreen
 
 object Routes {
     const val LOGIN = "login"

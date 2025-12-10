@@ -4,7 +4,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.univalle.shopu.domain.repository.OrdersRepository
-import com.univalle.shopu.presentation.features.orders.Order
+import com.univalle.shopu.domain.model.Order
 import com.univalle.shopu.domain.model.OrderStatus
 import kotlinx.coroutines.tasks.await
 
