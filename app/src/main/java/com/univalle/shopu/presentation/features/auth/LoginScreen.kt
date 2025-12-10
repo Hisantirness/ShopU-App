@@ -94,7 +94,7 @@ fun LoginScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             ShopUButton(
-                text = if (loading) "" else stringResource(R.string.login_button),
+                text = stringResource(R.string.login_button),
                 onClick = {
                     error = null
                     if (email.isBlank()) {
@@ -147,16 +147,17 @@ fun LoginScreen(
                         }
                 },
                 enabled = !loading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (loading) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+                modifier = Modifier.fillMaxWidth(),
+                content = if (loading) {
+                    {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                } else null
+            )
             Spacer(modifier = Modifier.height(16.dp))
             ShopUButton(
                 text = stringResource(R.string.create_account),
