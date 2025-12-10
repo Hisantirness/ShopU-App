@@ -125,15 +125,17 @@ fun ProductsMenuScreen(
             )
         )
 
-        // Categories
-        Row(Modifier.padding(horizontal = 16.dp)) {
-            categories.forEach { cat ->
+        // Categories - Horizontally scrollable
+        androidx.compose.foundation.lazy.LazyRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(categories) { cat ->
                 val selected = selectedCategory == cat
                 FilterChip(
                     selected = selected,
                     onClick = { selectedCategory = cat },
                     label = { Text(cat) },
-                    modifier = Modifier.padding(end = 8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         containerColor = cs.surface,
                         selectedContainerColor = cs.primary,
