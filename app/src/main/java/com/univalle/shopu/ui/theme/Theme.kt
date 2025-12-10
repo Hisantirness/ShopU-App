@@ -15,6 +15,7 @@ import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private val Red = Color(0xFFD63734)
 private val Black = Color(0xFF060000)
@@ -71,7 +72,7 @@ fun ShopUTheme(
         Font(googleFont = poppins, fontProvider = provider, weight = FontWeight.SemiBold),
         Font(googleFont = poppins, fontProvider = provider, weight = FontWeight.Bold)
     )
-    // Typography mapping guided by Figma using base M3 styles
+    // Typography mapping guided by Figma using base M3 styles with increased sizes
     val base = Typography()
     val typography = Typography(
         displayLarge = base.displayLarge.copy(fontFamily = poppinsFamily),
@@ -80,15 +81,15 @@ fun ShopUTheme(
         headlineLarge = base.headlineLarge.copy(fontFamily = poppinsFamily),
         headlineMedium = base.headlineMedium.copy(fontFamily = poppinsFamily),
         headlineSmall = base.headlineSmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold),
-        titleLarge = base.titleLarge.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Bold),
-        titleMedium = base.titleMedium.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold),
-        titleSmall = base.titleSmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold),
-        bodyLarge = base.bodyLarge.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Normal),
-        bodyMedium = base.bodyMedium.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Normal),
-        bodySmall = base.bodySmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Normal),
-        labelLarge = base.labelLarge.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold),
-        labelMedium = base.labelMedium.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Medium),
-        labelSmall = base.labelSmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Medium)
+        titleLarge = base.titleLarge.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Bold, fontSize = 28.sp),
+        titleMedium = base.titleMedium.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold, fontSize = 20.sp),
+        titleSmall = base.titleSmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold, fontSize = 18.sp),
+        bodyLarge = base.bodyLarge.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Normal, fontSize = 18.sp),
+        bodyMedium = base.bodyMedium.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Normal, fontSize = 16.sp),
+        bodySmall = base.bodySmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Normal, fontSize = 14.sp),
+        labelLarge = base.labelLarge.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp),
+        labelMedium = base.labelMedium.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Medium, fontSize = 14.sp),
+        labelSmall = base.labelSmall.copy(fontFamily = poppinsFamily, fontWeight = FontWeight.Medium, fontSize = 12.sp)
     )
 
     MaterialTheme(
