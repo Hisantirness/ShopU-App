@@ -59,8 +59,12 @@ fun OrdersView(onBack: () -> Unit, onOrderClick: (String) -> Unit, vm: OrdersVie
                 shape = MaterialTheme.shapes.large
             )
 
-            // Tabs estados
-            TabRow(selectedTabIndex = state.selectedTab, containerColor = cs.surface) {
+            // Tabs estados - Horizontally scrollable
+            ScrollableTabRow(
+                selectedTabIndex = state.selectedTab,
+                containerColor = cs.surface,
+                edgePadding = 16.dp
+            ) {
                 vm.statuses().forEachIndexed { idx, status ->
                     val title = getStatusTitle(status)
                     Tab(
@@ -68,7 +72,13 @@ fun OrdersView(onBack: () -> Unit, onOrderClick: (String) -> Unit, vm: OrdersVie
                         onClick = { vm.onEvent(OrdersEvent.OnTabChange(idx)) },
                         selectedContentColor = cs.primary,
                         unselectedContentColor = cs.onSurface.copy(alpha = 0.7f),
-                        text = { Text(title) }
+                        text = { 
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (state.selectedTab == idx) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
                     )
                 }
             }

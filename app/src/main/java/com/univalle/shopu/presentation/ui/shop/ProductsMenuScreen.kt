@@ -70,42 +70,56 @@ fun ProductsMenuScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(cs.surface)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = R.drawable.shopulogofinal),
                 contentDescription = stringResource(R.string.app_logo_desc),
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(28.dp),
                 contentScale = ContentScale.Fit
             )
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.menu_title), color = cs.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.menu_title),
+                color = cs.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = onHistoryClick) {
+            IconButton(
+                onClick = onHistoryClick,
+                modifier = Modifier.size(40.dp)
+            ) {
                 Icon(
                     imageVector = androidx.compose.material.icons.Icons.Default.List,
                     contentDescription = stringResource(R.string.order_history),
                     tint = cs.primary,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
-            Spacer(Modifier.width(8.dp))
-            IconButton(onClick = onProfileClick) {
+            IconButton(
+                onClick = onCartClick,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = stringResource(R.string.cart_desc),
+                    tint = cs.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            IconButton(
+                onClick = onProfileClick,
+                modifier = Modifier.size(40.dp)
+            ) {
                 Icon(
                     imageVector = androidx.compose.material.icons.Icons.Default.Person,
                     contentDescription = stringResource(R.string.user_profile),
                     tint = cs.primary,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
-            Spacer(Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = stringResource(R.string.cart_desc),
-                tint = cs.primary,
-                modifier = Modifier.size(28.dp).clickable { onCartClick() }
-            )
         }
 
         // Search
@@ -125,15 +139,17 @@ fun ProductsMenuScreen(
             )
         )
 
-        // Categories
-        Row(Modifier.padding(horizontal = 16.dp)) {
-            categories.forEach { cat ->
+        // Categories - Horizontally scrollable
+        androidx.compose.foundation.lazy.LazyRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(categories) { cat ->
                 val selected = selectedCategory == cat
                 FilterChip(
                     selected = selected,
                     onClick = { selectedCategory = cat },
                     label = { Text(cat) },
-                    modifier = Modifier.padding(end = 8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         containerColor = cs.surface,
                         selectedContainerColor = cs.primary,

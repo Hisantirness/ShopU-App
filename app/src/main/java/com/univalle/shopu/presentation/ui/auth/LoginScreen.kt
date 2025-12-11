@@ -2,29 +2,30 @@ package com.univalle.shopu.presentation.ui.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.firestore.ktx.firestore
-import com.univalle.shopu.R
-import androidx.compose.ui.res.stringResource
-import com.univalle.shopu.presentation.util.isInstitutionalEmail
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.univalle.shopu.R
+import com.univalle.shopu.presentation.util.isInstitutionalEmail
+import com.univalle.shopu.ui.components.ShopUButton
+import com.univalle.shopu.ui.components.ShopUTextField
 
 @Composable
 fun LoginScreen(
@@ -55,64 +56,59 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Image(
                 painter = painterResource(id = R.drawable.shopulogofinal),
                 contentDescription = stringResource(R.string.app_logo_desc),
                 contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(120.dp)
+                modifier = Modifier.size(140.dp)
             )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(text = stringResource(R.string.welcome_message), color = cs.onBackground, style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(24.dp))
-            OutlinedTextField(
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = stringResource(R.string.welcome_message),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = cs.onBackground
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            ShopUTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(stringResource(R.string.email_hint)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = cs.primary,
-                    unfocusedBorderColor = cs.onSurface.copy(alpha = 0.2f),
-                    cursorColor = cs.primary,
-                    focusedLabelColor = cs.primary
-                )
+                label = stringResource(R.string.email_hint),
+                modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(
+            Spacer(modifier = Modifier.height(16.dp))
+            ShopUTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text(stringResource(R.string.password_hint)) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = cs.primary,
-                    unfocusedBorderColor = cs.onSurface.copy(alpha = 0.2f),
-                    cursorColor = cs.primary,
-                    focusedLabelColor = cs.primary
-                )
+                label = stringResource(R.string.password_hint),
+                isPassword = true,
+                modifier = Modifier.fillMaxWidth()
             )
             if (error != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = error ?: "", color = Color.Red)
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = error ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 14.sp
+                )
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Button(
+            ShopUButton(
+                text = stringResource(R.string.login_button),
                 onClick = {
                     error = null
                     if (email.isBlank()) {
                         error = context.getString(R.string.error_enter_email)
-                        return@Button
+                        return@ShopUButton
                     }
                     if (!isInstitutionalEmail(email)) {
                         error = context.getString(R.string.error_institutional_email)
-                        return@Button
+                        return@ShopUButton
                     }
                     if (password.isBlank()) {
                         error = context.getString(R.string.error_enter_password)
-                        return@Button
+                        return@ShopUButton
                     }
 
                     loading = true
@@ -152,16 +148,24 @@ fun LoginScreen(
                         }
                 },
                 enabled = !loading,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)
-            ) {
-                if (loading) CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp) else Text(stringResource(R.string.login_button))
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = onNavigateToRegister, modifier = Modifier.fillMaxWidth().height(52.dp), colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)) {
-                Text(stringResource(R.string.create_account))
-            }
-            Spacer(modifier = Modifier.height(24.dp))
+                modifier = Modifier.fillMaxWidth(),
+                content = if (loading) {
+                    {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                } else null
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            ShopUButton(
+                text = stringResource(R.string.create_account),
+                onClick = onNavigateToRegister,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             TextButton(onClick = {
                 if (email.isBlank()) {
                     error = context.getString(R.string.recover_password_enter_email)
