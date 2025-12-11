@@ -117,4 +117,8 @@
     <string name="profile_updated">Perfil actualizado correctamente</string>
     <string name="profile_update_error">Error al actualizar perfil</string>
     <string name="item_added_to_cart">Añadido al carrito</string>
+    <string name="subtotal_label">Subtotal:</string>
+    <string name="taxes_label">Impuestos:</string>
+    <string name="total_label">Total:</string>
+    <string name="remove_item">Eliminar</string>
 </resources>
