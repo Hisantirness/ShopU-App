@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.univalle.shopu.R
 import com.univalle.shopu.domain.model.Product
+import com.univalle.shopu.presentation.viewmodel.ProductsViewModel
 import com.univalle.shopu.presentation.util.formatCurrencyCOP
 import androidx.compose.ui.res.stringResource
 

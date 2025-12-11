@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.univalle.shopu.R
+import com.univalle.shopu.domain.model.Order
+import com.univalle.shopu.presentation.viewmodel.OrdersViewModel
 import com.univalle.shopu.presentation.util.formatCurrencyCOP
 import androidx.compose.ui.res.stringResource
 

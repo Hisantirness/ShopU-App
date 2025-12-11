@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.univalle.shopu.data.repository.impl.FirebaseWorkersRepository
 import com.univalle.shopu.domain.repository.Worker
 import com.univalle.shopu.domain.repository.WorkersRepository
+import com.univalle.shopu.presentation.ui.workers.WorkersUiState
+import com.univalle.shopu.presentation.ui.workers.WorkersEvent
 import com.univalle.shopu.presentation.util.isInstitutionalEmail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
