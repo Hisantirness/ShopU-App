@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.univalle.shopu.R
+import com.univalle.shopu.presentation.viewmodel.CreateProductViewModel
 import androidx.compose.ui.res.stringResource
 
 @Composable

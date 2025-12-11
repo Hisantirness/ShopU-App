@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.shopu.domain.repository.ProductsRepository
 import com.univalle.shopu.data.repository.impl.FirebaseProductsRepository
+import com.univalle.shopu.presentation.ui.products.ProductsUiState
+import com.univalle.shopu.presentation.ui.products.ProductsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

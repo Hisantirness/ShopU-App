@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
 import com.univalle.shopu.presentation.ui.auth.LoginScreen
 import com.univalle.shopu.presentation.ui.auth.RegisterScreen
-
 import com.univalle.shopu.presentation.ui.shop.ProductsMenuScreen
 import com.univalle.shopu.presentation.ui.shop.CartScreen
 import com.univalle.shopu.presentation.ui.shop.UserProfileScreen
@@ -15,6 +14,12 @@ import com.univalle.shopu.presentation.ui.shop.OrderHistoryScreen
 import com.univalle.shopu.presentation.ui.shop.PaymentScreen
 import com.univalle.shopu.presentation.ui.admin.AdminHomeScreen
 import com.univalle.shopu.presentation.ui.admin.ManageAdminsScreen
+import com.univalle.shopu.presentation.ui.products.CreateProductView
+import com.univalle.shopu.presentation.ui.products.EditProductView
+import com.univalle.shopu.presentation.ui.products.ProductsView
+import com.univalle.shopu.presentation.ui.orders.OrdersView
+import com.univalle.shopu.presentation.ui.orders.OrderDetailsScreen
+import com.univalle.shopu.presentation.ui.workers.WorkersView
 
 object Routes {
     const val LOGIN = "login"
@@ -143,7 +148,7 @@ fun NavigationWrapper(
         }
 
         composable(Routes.ADMIN_CREATE_PRODUCT) {
-            com.univalle.shopu.presentation.features.products.CreateProductView(
+            CreateProductView(
                 onDone = {
                     navController.popBackStack()
                 },
@@ -156,7 +161,7 @@ fun NavigationWrapper(
             arguments = listOf(androidx.navigation.navArgument("productId") { type = androidx.navigation.NavType.StringType })
         ) { backStackEntry ->
             val pid = (backStackEntry.arguments?.getString("productId") ?: "").trim()
-            com.univalle.shopu.presentation.features.products.EditProductView(
+            EditProductView(
                 productId = pid,
                 onDone = {
                     navController.popBackStack()
@@ -166,7 +171,7 @@ fun NavigationWrapper(
         }
 
         composable(Routes.ADMIN_ORDERS) {
-            com.univalle.shopu.presentation.features.orders.OrdersView(
+            OrdersView(
                 onBack = { navController.popBackStack() },
                 onOrderClick = { orderId ->
                     navController.navigate("order_details/$orderId/true")
@@ -175,7 +180,7 @@ fun NavigationWrapper(
         }
 
         composable(Routes.ADMIN_MANAGE_PRODUCTS) {
-            com.univalle.shopu.presentation.features.products.ProductsView(
+            ProductsView(
                 onBack = { navController.popBackStack() },
                 onCreateNew = { navController.navigate(Routes.ADMIN_CREATE_PRODUCT) },
                 onEditProduct = { pid -> navController.navigate("admin_edit_product/$pid") }
@@ -187,7 +192,7 @@ fun NavigationWrapper(
         }
 
         composable(Routes.ADMIN_MANAGE_WORKERS) {
-            com.univalle.shopu.presentation.features.workers.WorkersView(onBack = { navController.popBackStack() })
+            WorkersView(onBack = { navController.popBackStack() })
         }
 
         composable(
@@ -199,7 +204,7 @@ fun NavigationWrapper(
         ) { backStackEntry ->
             val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
             val isAdmin = backStackEntry.arguments?.getBoolean("isAdmin") ?: false
-            com.univalle.shopu.presentation.features.orders.OrderDetailsScreen(
+            OrderDetailsScreen(
                 orderId = orderId,
                 isAdmin = isAdmin,
                 onBack = { navController.popBackStack() }
